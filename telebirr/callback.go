@@ -1,9 +1,8 @@
-package client
+package telebirr
 
 import (
 	"crypto/rsa"
 	"fmt"
-	"github.com/dullkingsman/go-telebirr/internal/model"
 )
 
 type PaymentCallbackRequestBody struct {
@@ -28,9 +27,9 @@ func (cb *PaymentCallbackRequestBody) VerifySignature(key *rsa.PublicKey) error 
 		return fmt.Errorf("object is nil")
 	}
 
-	var signatureString = model.NewSignatureData().Add(
+	var signatureString = NewSignatureData().Add(
 		*cb,
-		model.SignatureDataExclusions{
+		SignatureDataExclusions{
 			"sign":      true,
 			"sign_type": true,
 		},

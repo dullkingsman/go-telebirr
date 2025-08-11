@@ -3,6 +3,7 @@ package httpclient
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -24,12 +25,13 @@ func NewResponse[T any](resp *http.Response, err error) (*Response[T], error) {
 		Headers: resp.Header,
 	}
 
-	if err = json.NewDecoder(resp.Body).Decode(&tmp.Body); err != nil {
-		return nil, fmt.Errorf("failed to parse JSON response: %w", err)
+	if resp.StatusCode >= 400 {
+		_tmp, _ := io.ReadAll(resp.Body)
+		return tmp, fmt.Errorf("HTTP error! status: %d, :%s", resp.StatusCode, _tmp)
 	}
 
-	if resp.StatusCode >= 400 {
-		return tmp, fmt.Errorf("HTTP error! status: %d", resp.StatusCode)
+	if err = json.NewDecoder(resp.Body).Decode(&tmp.Body); err != nil {
+		return nil, fmt.Errorf("failed to parse JSON response: %w", err)
 	}
 
 	return tmp, nil

@@ -1,10 +1,11 @@
-package client
+package telebirr
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dullkingsman/go-telebirr/internal/httpclient"
 	"log"
+
+	"github.com/dullkingsman/go-telebirr/internal/httpclient"
 )
 
 type GenerateAppTokenRequestBody struct {

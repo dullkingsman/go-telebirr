@@ -1,4 +1,4 @@
-package client
+package telebirr
 
 var Endpoints = struct {
 	GenerateAppToken string
