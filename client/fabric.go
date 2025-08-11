@@ -3,8 +3,8 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dullkingsman/go-telebirr/internal/httpclient"
 	"log"
-	"telebirr-go/internal/httpclient"
 )
 
 type GenerateAppTokenRequestBody struct {

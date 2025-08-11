@@ -3,7 +3,7 @@ package client
 import (
 	"crypto/rsa"
 	"fmt"
-	"telebirr-go/internal/model"
+	"github.com/dullkingsman/go-telebirr/internal/model"
 )
 
 type PaymentCallbackRequestBody struct {

@@ -1,9 +1,9 @@
 package httpclient
 
 import (
+	"github.com/dullkingsman/go-telebirr/internal/utils"
+	"github.com/dullkingsman/go-telebirr/internal/values"
 	"net/http"
-	"telebirr-go/internal/utils"
-	"telebirr-go/internal/values"
 	"time"
 )
 

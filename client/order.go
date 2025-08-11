@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dullkingsman/go-telebirr/internal/httpclient"
+	"github.com/dullkingsman/go-telebirr/internal/model"
+	"github.com/dullkingsman/go-telebirr/internal/utils"
 	"log"
 	"net/url"
-	"telebirr-go/internal/httpclient"
-	"telebirr-go/internal/model"
-	"telebirr-go/internal/utils"
 )
 
 type MerchantPreOrderRequestBody struct {

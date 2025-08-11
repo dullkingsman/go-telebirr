@@ -1,14 +1,10 @@
 package client
 
-import (
-	"telebirr-go/internal/config"
-)
-
 type Client struct {
-	config config.Config
+	config Config
 }
 
-func NewClient(config config.Config) *Client {
+func NewClient(config Config) *Client {
 	if err := config.ParsePrivateKey(); err != nil {
 		panic(err)
 	}
@@ -24,6 +20,6 @@ func NewClient(config config.Config) *Client {
 	}
 }
 
-func (c *Client) Config() config.Config {
+func (c *Client) Config() Config {
 	return c.config
 }

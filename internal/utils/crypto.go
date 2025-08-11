@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"github.com/dullkingsman/go-telebirr/internal/model"
 	"math/rand"
 	"strings"
-	"telebirr-go/internal/model"
 	"time"
 )
 
