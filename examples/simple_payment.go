@@ -4,12 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"telebirr-go/client"
-	"telebirr-go/internal/config"
-	"telebirr-go/internal/utils"
+
+	"github.com/dullkingsman/go-telebirr/pkg/client"
+	"github.com/dullkingsman/go-telebirr/telebirr"
 )
 
-var TelebirrClient = client.NewClient(config.Config{
+var TelebirrClient = telebirr.NewClient(telebirr.ClientConfig{
 	BaseURL:                 "https://196.188.120.3:38443/apiaccess/payment/gateway",
 	WebBaseURL:              "https://developerportal.ethiotelebirr.et:38443/payment/web/paygate?",
 	FabricAppID:             "<fabric-id>",
@@ -29,6 +29,17 @@ func main() {
 	_ = (&http.Server{
 		Addr: ":8083",
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+			w.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(204)
+				return
+			}
+
 			var resp, err = TelebirrClient.GenerateAppToken()
 
 			if resp != nil {
@@ -41,27 +52,27 @@ func main() {
 
 			var _config = TelebirrClient.Config()
 
-			var body = client.MerchantPreOrderRequestBody{
-				Timestamp: utils.GetCurrentUnixTimestampString(),
-				NonceStr:  utils.CreateNonceStr(32),
+			var body = telebirr.MerchantPreOrderRequestBody{
+				Timestamp: client.GetCurrentUnixTimestampString(),
+				NonceStr:  client.CreateNonceStr(32),
 				Method:    "payment.preorder",
 				Version:   "1.0",
 				SignType:  "SHA256WithRSA",
-				BizContent: client.MerchantPreOrderRequestBizContent{
+				BizContent: telebirr.MerchantPreOrderRequestBizContent{
 					TransCurrency:       "ETB",
 					TotalAmount:         "1.5",
-					MerchOrderID:        utils.GetCurrentUnixMilliTimestampString(),
+					MerchOrderID:        client.GetCurrentUnixMilliTimestampString(),
 					AppID:               _config.MerchantAppID,
 					MerchCode:           _config.MerchantCode,
 					TimeoutExpress:      "120m",
 					TradeType:           "Checkout",
-					NotifyURL:           "<your-callback-url>",
+					NotifyURL:           "https://api.vps.gebeta.app/v1/external/payments/verify/post_box_subscription/sale-id/telebirr",
 					Title:               "diamond_1.5",
 					BusinessType:        "BuyGoods",
 					PayeeIdentifier:     _config.MerchantCode,
 					PayeeIdentifierType: "04",
 					PayeeType:           "5000",
-					RedirectURL:         "<your-redirect-url>",
+					RedirectURL:         "https://api.vps.gebeta.app/v1/external/payments/status/post_box_subscription/sale-id/",
 					CallbackInfo:        "From web",
 				},
 			}
@@ -95,7 +106,8 @@ func main() {
 
 				fmt.Printf("redirect: %+v\n", requestStr)
 
-				http.Redirect(w, r, requestStr, http.StatusFound)
+				w.WriteHeader(200)
+				w.Write([]byte(requestStr))
 			}
 		}),
 	}).ListenAndServe()
