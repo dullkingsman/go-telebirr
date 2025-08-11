@@ -1,3 +1,3 @@
-module go-telebirr
+module github.com/dullkingsman/go-telebirr
 
 go 1.24
