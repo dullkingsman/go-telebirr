@@ -1,15 +1,15 @@
-package client
+package telebirr
 
 import (
 	"crypto/rsa"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dullkingsman/go-telebirr/internal/httpclient"
-	"github.com/dullkingsman/go-telebirr/internal/model"
-	"github.com/dullkingsman/go-telebirr/internal/utils"
 	"log"
 	"net/url"
+
+	"github.com/dullkingsman/go-telebirr/internal/httpclient"
+	"github.com/dullkingsman/go-telebirr/pkg/client"
 )
 
 type MerchantPreOrderRequestBody struct {
@@ -45,16 +45,16 @@ func (cb *MerchantPreOrderRequestBody) AttachSignature(key *rsa.PrivateKey) erro
 		return fmt.Errorf("object is nil")
 	}
 
-	var signString = model.NewSignatureData().Add(
+	var signString = NewSignatureData().Add(
 		*cb,
-		model.SignatureDataExclusions{
+		SignatureDataExclusions{
 			"sign":        true,
 			"sign_type":   true,
 			"biz_content": true, // handled below
 		},
 	).Add(
 		cb.BizContent,
-		model.SignatureDataExclusions{},
+		SignatureDataExclusions{},
 	).Construct()
 
 	sign, err := signString.Sign(key)
@@ -88,9 +88,9 @@ func (cb *MerchantPreOrderResponseBody) VerifySignature(key *rsa.PublicKey) erro
 		return fmt.Errorf("object is nil")
 	}
 
-	var signatureString = model.NewSignatureData().Add(
+	var signatureString = NewSignatureData().Add(
 		*cb,
-		model.SignatureDataExclusions{
+		SignatureDataExclusions{
 			"sign":        true,
 			"sign_type":   true,
 			"biz_content": true,
@@ -167,13 +167,13 @@ func (c *Client) NewRawRequest(prepayId string) (RawRequestString, error) {
 	var req = RawRequest{
 		AppId:     c.config.MerchantAppID,
 		MerchCode: c.config.MerchantCode,
-		NonceStr:  utils.CreateNonceStr(32),
+		NonceStr:  client.CreateNonceStr(32),
 		PrepayId:  prepayId,
-		Timestamp: utils.GetCurrentUnixTimestampString(),
+		Timestamp: client.GetCurrentUnixTimestampString(),
 		SignType:  "SHA256WithRSA",
 	}
 
-	var signString = model.NewSignatureData().Add(
+	var signString = NewSignatureData().Add(
 		req,
 		map[string]bool{
 			"sign":      true,

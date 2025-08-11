@@ -1,4 +1,4 @@
-package client
+package telebirr
 
 import (
 	"crypto/rsa"
@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-type Config struct {
+type ClientConfig struct {
 	BaseURL                 string          `json:"baseUrl"`
 	WebBaseURL              string          `json:"webBaseUrl"`
 	FabricAppID             string          `json:"fabricAppId"`
@@ -21,7 +21,7 @@ type Config struct {
 	ParsedPublicKey         *rsa.PublicKey  `json:"-"`
 }
 
-func (c *Config) ParsePrivateKey() error {
+func (c *ClientConfig) ParsePrivateKey() error {
 	if c == nil {
 		return fmt.Errorf("config is nil")
 	}
@@ -45,7 +45,7 @@ func (c *Config) ParsePrivateKey() error {
 	return nil
 }
 
-func (c *Config) ParsePublicKey() error {
+func (c *ClientConfig) ParsePublicKey() error {
 	if c == nil {
 		return fmt.Errorf("config is nil")
 	}
@@ -85,7 +85,7 @@ func (c *Config) ParsePublicKey() error {
 	return nil
 }
 
-func (c *Config) GetParsedPrivateKey() *rsa.PrivateKey {
+func (c *ClientConfig) GetParsedPrivateKey() *rsa.PrivateKey {
 	if c == nil {
 		return nil
 	}
@@ -99,7 +99,7 @@ func (c *Config) GetParsedPrivateKey() *rsa.PrivateKey {
 	return c.ParsedPrivateKey
 }
 
-func (c *Config) GetParsedPublicKey() *rsa.PublicKey {
+func (c *ClientConfig) GetParsedPublicKey() *rsa.PublicKey {
 	if c == nil {
 		return nil
 	}

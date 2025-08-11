@@ -1,10 +1,10 @@
-package client
+package telebirr
 
 type Client struct {
-	config Config
+	config ClientConfig
 }
 
-func NewClient(config Config) *Client {
+func NewClient(config ClientConfig) *Client {
 	if err := config.ParsePrivateKey(); err != nil {
 		panic(err)
 	}
@@ -20,6 +20,6 @@ func NewClient(config Config) *Client {
 	}
 }
 
-func (c *Client) Config() Config {
+func (c *Client) Config() ClientConfig {
 	return c.config
 }

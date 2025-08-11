@@ -1,10 +1,11 @@
 package httpclient
 
 import (
-	"github.com/dullkingsman/go-telebirr/internal/utils"
-	"github.com/dullkingsman/go-telebirr/internal/values"
 	"net/http"
 	"time"
+
+	"github.com/dullkingsman/go-telebirr/internal/values"
+	"github.com/dullkingsman/go-telebirr/pkg/utils"
 )
 
 type RetryBackoffMethod[T any] func(attempt int, client *HTTPClient[T], resp *http.Response, err error) time.Duration
