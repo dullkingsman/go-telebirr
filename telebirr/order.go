@@ -163,7 +163,7 @@ type RawRequest struct {
 	SignType  string `json:"sign_type"`
 }
 
-func (c *Client) NewRawRequest(prepayId string) (RawRequestString, error) {
+func (c *Client) NewRawRequest(prepayId string, tradeType string) (RawRequestString, error) {
 	var req = RawRequest{
 		AppId:     c.config.MerchantAppID,
 		MerchCode: c.config.MerchantCode,
@@ -190,6 +190,10 @@ func (c *Client) NewRawRequest(prepayId string) (RawRequestString, error) {
 	req.Sign = sign
 
 	var request = c.config.WebBaseURL
+
+	if tradeType == "InApp" {
+		request = ""
+	}
 
 	request += "appid=" + url.QueryEscape(req.AppId) + "&"
 	request += "merch_code=" + url.QueryEscape(req.MerchCode) + "&"
