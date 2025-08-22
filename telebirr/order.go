@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"strconv"
 
 	"github.com/dullkingsman/go-telebirr/internal/httpclient"
 	"github.com/dullkingsman/go-telebirr/pkg/client"
@@ -28,7 +27,7 @@ type MerchantPreOrderRequestBizContent struct {
 	TotalAmount         string `json:"total_amount"`
 	MerchOrderID        string `json:"merch_order_id"`
 	AppID               string `json:"appid"`
-	MerchCode           int    `json:"merch_code"`
+	MerchCode           string `json:"merch_code"`
 	TimeoutExpress      string `json:"timeout_express"`
 	TradeType           string `json:"trade_type"`
 	NotifyURL           string `json:"notify_url"`
@@ -156,7 +155,7 @@ func (c *Client) MerchantPreOrder(token string, body MerchantPreOrderRequestBody
 
 type RawRequest struct {
 	AppId     string `json:"appid"`
-	MerchCode int    `json:"merch_code"`
+	MerchCode string `json:"merch_code"`
 	NonceStr  string `json:"nonce_str"`
 	PrepayId  string `json:"prepay_id"`
 	Timestamp string `json:"timestamp"`
@@ -197,7 +196,7 @@ func (c *Client) NewRawRequest(prepayId string, tradeType string) (RawRequestStr
 	}
 
 	request += "appid=" + url.QueryEscape(req.AppId) + "&"
-	request += "merch_code=" + url.QueryEscape(strconv.Itoa(req.MerchCode)) + "&"
+	request += "merch_code=" + url.QueryEscape(req.MerchCode) + "&"
 	request += "nonce_str=" + url.QueryEscape(req.NonceStr) + "&"
 	request += "prepay_id=" + url.QueryEscape(req.PrepayId) + "&"
 	request += "timestamp=" + url.QueryEscape(req.Timestamp) + "&"
