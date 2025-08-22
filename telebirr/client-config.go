@@ -13,7 +13,7 @@ type ClientConfig struct {
 	FabricAppID             string          `json:"fabricAppId"`
 	AppSecret               string          `json:"appSecret"`
 	MerchantAppID           string          `json:"merchantAppId"`
-	MerchantCode            string          `json:"merchantCode"`
+	MerchantCode            int             `json:"merchantCode"`
 	PrivateKey              string          `json:"privateKey"`
 	ParsedPrivateKey        *rsa.PrivateKey `json:"-"`
 	VerifyResponseSignature bool            `json:"verifyResponseSignature"`
