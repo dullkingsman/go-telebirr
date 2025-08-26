@@ -200,7 +200,13 @@ func (c *Client) NewRawRequest(prepayId string, tradeType string) (RawRequestStr
 	request += "nonce_str=" + url.QueryEscape(req.NonceStr) + "&"
 	request += "prepay_id=" + url.QueryEscape(req.PrepayId) + "&"
 	request += "timestamp=" + url.QueryEscape(req.Timestamp) + "&"
-	request += "sign=" + url.QueryEscape(req.Sign) + "&"
+
+	if tradeType == "InApp" {
+		request += "sign=" + req.Sign + "&"
+	} else {
+		request += "sign=" + url.QueryEscape(req.Sign) + "&"
+	}
+
 	request += "sign_type=" + url.QueryEscape(req.SignType)
 
 	return RawRequestString(request), nil
