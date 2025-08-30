@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/dullkingsman/go-telebirr/internal/httpclient"
 )
@@ -19,7 +21,22 @@ type GenerateAppTokenResponseBody struct {
 }
 
 func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppTokenResponseBody]) (*httpclient.Response[GenerateAppTokenResponseBody], error) {
-	reqBody, err := json.Marshal(GenerateAppTokenRequestBody{AppSecret: c.config.AppSecret})
+	var dateLayout = "20060102150405"
+
+	var token, tokenEffectiveDate, tokenExpirationDate = c.GetToken()
+
+	if token != nil {
+		return &httpclient.Response[GenerateAppTokenResponseBody]{
+			Status: http.StatusOK,
+			Body: GenerateAppTokenResponseBody{
+				Token:          *token,
+				EffectiveDate:  tokenEffectiveDate.Format(dateLayout),
+				ExpirationDate: tokenExpirationDate.Format(dateLayout),
+			},
+		}, nil
+	}
+
+	var reqBody, err = json.Marshal(GenerateAppTokenRequestBody{AppSecret: c.config.AppSecret})
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request body: %w", err)
 	}
@@ -42,6 +59,13 @@ func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppT
 		log.Printf("Error response body: %+v\n", resp.Body)
 		return nil, fmt.Errorf("HTTP error! status: %d", resp.Status)
 	}
+
+	var (
+		expirationDate, _ = time.Parse(dateLayout, resp.Body.ExpirationDate)
+		effectiveDate, _  = time.Parse(dateLayout, resp.Body.EffectiveDate)
+	)
+
+	c.SetToken(resp.Body.Token, effectiveDate, expirationDate)
 
 	return resp, nil
 }

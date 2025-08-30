@@ -110,6 +110,10 @@ func (cb *MerchantPreOrderResponseBody) VerifySignature(key *rsa.PublicKey) erro
 }
 
 func (c *Client) MerchantPreOrder(token string, body MerchantPreOrderRequestBody, config ...httpclient.ClientConfig[MerchantPreOrderResponseBody]) (*httpclient.Response[MerchantPreOrderResponseBody], error) {
+	if body.Method == "" {
+		body.Method = "payment.preorder"
+	}
+
 	var err = body.AttachSignature(c.config.ParsedPrivateKey)
 
 	if err != nil {
