@@ -43,8 +43,6 @@ func NewHTTPClient[T any](config ...ClientConfig[T]) *HTTPClient[T] {
 		tmp.Configure(_config)
 	}
 
-	tmp.log = _config.Log
-
 	return tmp
 }
 
@@ -83,6 +81,8 @@ func (c *HTTPClient[T]) Configure(config *ClientConfig[T]) *HTTPClient[T] {
 	if c == nil || config == nil {
 		return nil
 	}
+
+	c.log = config.Log
 
 	if config.MaxRetries != nil {
 		c.SetMaxRetries(*config.MaxRetries)
