@@ -133,7 +133,7 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 					jsonifiedHeader, headeErr = json.Marshal(_req.Header)
 				)
 
-				if bodyErr == nil || headeErr == nil {
+				if bodyErr == nil && headeErr == nil {
 					fmt.Printf(`TELEBIRR_REQUEST ========================================================
 url: %s
 method: %s
