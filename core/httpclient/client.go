@@ -1,8 +1,10 @@
 package httpclient
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -107,6 +109,12 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 	}
 
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
+		var logBody bytes.Buffer
+
+		if c.log {
+			_req.Body = io.NopCloser(io.TeeReader(_req.Body, &logBody))
+		}
+
 		resp, err = c.client.Do(_req)
 
 		if err == nil {
@@ -129,11 +137,10 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 				}
 
 				var (
-					jsonifiedBody, bodyErr     = json.Marshal(_req.Body)
 					jsonifiedHeader, headerErr = json.Marshal(_req.Header)
 				)
 
-				if bodyErr == nil && headerErr == nil {
+				if headerErr == nil {
 					fmt.Printf(`TELEBIRR_REQUEST ========================================================
 url: %s
 method: %s
@@ -145,24 +152,23 @@ TELEBIRR_RESPONSE =======================================================
 status: %d
 headers: %+v
 body: %+v
-TELEBIRR_RESPONSE =======================================================`, req.Url, req.Method, jsonifiedHeader, jsonifiedBody, resStatus, resHeaders, resBody)
+TELEBIRR_RESPONSE =======================================================`, req.Url, req.Method, jsonifiedHeader, logBody.String(), resStatus, resHeaders, resBody)
 				} else {
 					fmt.Printf(`
 Could not stringify telebirr request parameters. 
 headerErr: %v
-bodyErr: %v, 
 TELEBIRR_REQUEST ========================================================
 url: %s
 method: %s
 headers: %+v
-body: %+v
+body: %s
 TELEBIRR_REQUEST ========================================================
 -------------------------------------------------------------------------
 TELEBIRR_RESPONSE =======================================================
 status: %d
 headers: %+v
 body: %+v
-TELEBIRR_RESPONSE =======================================================`, headerErr, bodyErr, req.Url, req.Method, req.Headers, req.Body, resStatus, resHeaders, resBody)
+TELEBIRR_RESPONSE =======================================================`, headerErr, req.Url, req.Method, req.Headers, logBody.String(), resStatus, resHeaders, resBody)
 				}
 			}
 
