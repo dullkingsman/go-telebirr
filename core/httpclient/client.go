@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"time"
 
 	"github.com/dullkingsman/go-telebirr/core/values"
@@ -109,6 +110,8 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 	}
 
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
+		var dump, _ = httputil.DumpRequestOut(_req, true)
+
 		var logBody bytes.Buffer
 
 		if c.log {
@@ -142,6 +145,7 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 
 				if headerErr == nil {
 					fmt.Printf(`
+dump: %q
 TELEBIRR_REQUEST ========================================================
 url: %s
 method: %s
@@ -154,9 +158,10 @@ status: %d
 headers: %+v
 body: %+v
 TELEBIRR_RESPONSE =======================================================
-`, req.Url, req.Method, jsonifiedHeader, logBody.String(), resStatus, resHeaders, resBody)
+`, string(dump), req.Url, req.Method, jsonifiedHeader, logBody.String(), resStatus, resHeaders, resBody)
 				} else {
 					fmt.Printf(`
+dump: %q 
 TELEBIRR_REQUEST ========================================================
 Could not stringify telebirr request parameters. 
 headerErr: %v
@@ -172,7 +177,7 @@ status: %d
 headers: %+v
 body: %+v
 TELEBIRR_RESPONSE =======================================================
-`, headerErr, req.Url, req.Method, req.Headers, logBody.String(), resStatus, resHeaders, resBody)
+`, string(dump), headerErr, req.Url, req.Method, req.Headers, logBody.String(), resStatus, resHeaders, resBody)
 				}
 			}
 
