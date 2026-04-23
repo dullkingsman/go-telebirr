@@ -6,6 +6,7 @@ type ClientConfig[T any] struct {
 	Client             *http.Client
 	MaxRetries         *int
 	RetryBackoffMethod RetryBackoffMethod[T]
+	Log                bool
 }
 
 func (c *ClientConfig[T]) GetClient(fallback *http.Client) *http.Client {

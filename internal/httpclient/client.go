@@ -1,6 +1,8 @@
 package httpclient
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -18,6 +20,7 @@ type HTTPClient[T any] struct {
 	client             *http.Client
 	maxRetries         int
 	retryBackoffMethod RetryBackoffMethod[T]
+	log                bool
 }
 
 func NewHTTPClient[T any](config ...ClientConfig[T]) *HTTPClient[T] {
@@ -39,6 +42,8 @@ func NewHTTPClient[T any](config ...ClientConfig[T]) *HTTPClient[T] {
 	if _config != nil {
 		tmp.Configure(_config)
 	}
+
+	tmp.log = _config.Log
 
 	return tmp
 }
@@ -99,6 +104,16 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 
 	if _req, err = req.Build(); err != nil {
 		return nil, err
+	}
+
+	if c.log {
+		var jsonified, err = json.Marshal(_req)
+
+		if err == nil {
+			fmt.Printf("Request: %s\n", jsonified)
+		} else {
+			fmt.Printf("Could not stringify: %+v\n", _req)
+		}
 	}
 
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
