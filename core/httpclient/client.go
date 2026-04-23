@@ -106,21 +106,65 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 		return nil, err
 	}
 
-	if c.log {
-		var jsonified, err = json.Marshal(_req)
-
-		if err == nil {
-			fmt.Printf("Request: %s\n", jsonified)
-		} else {
-			fmt.Printf("Could not stringify: %+v\n", _req)
-		}
-	}
-
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		resp, err = c.client.Do(_req)
 
 		if err == nil {
-			return NewResponse[T](resp, err)
+			var res, err = NewResponse[T](resp, err)
+
+			if c.log {
+				var (
+					resStatus  int
+					resHeaders map[string][]string
+					resBody    T
+				)
+
+				if res != nil {
+					resStatus = res.Status
+					resHeaders = res.Headers
+					resBody = res.Body
+				} else {
+					resStatus = -1
+					resHeaders = map[string][]string{}
+				}
+
+				var (
+					jsonifiedBody, bodyErr    = json.Marshal(_req.Body)
+					jsonifiedHeader, headeErr = json.Marshal(_req.Header)
+				)
+
+				if bodyErr == nil || headeErr == nil {
+					fmt.Printf(`TELEBIRR_REQUEST ========================================================
+url: %s
+method: %s
+headers: %s
+body: %s
+TELEBIRR_REQUEST ========================================================
+-------------------------------------------------------------------------
+TELEBIRR_RESPONSE =======================================================
+status: %d
+headers: %+v
+body: %+v
+TELEBIRR_RESPONSE =======================================================`, req.Url, req.Method, jsonifiedHeader, jsonifiedBody, resStatus, resHeaders, resBody)
+				} else {
+					fmt.Printf(`
+Could not stringify telebirr request.
+TELEBIRR_REQUEST ========================================================
+url: %s
+method: %s
+headers: %+v
+body: %+v
+TELEBIRR_REQUEST ========================================================
+-------------------------------------------------------------------------
+TELEBIRR_RESPONSE =======================================================
+status: %d
+headers: %+v
+body: %+v
+TELEBIRR_RESPONSE =======================================================`, req.Url, req.Method, req.Headers, req.Body, resStatus, resHeaders, resBody)
+				}
+			}
+
+			return res, err
 		}
 
 		time.Sleep(c.retryBackoffMethod(attempt, c, resp, err))
