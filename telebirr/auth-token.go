@@ -14,6 +14,7 @@ type GetAuthTokenRequestBody struct {
 	Timestamp  string                 `json:"timestamp"`   // UTC timestamp, seconds
 	Method     string                 `json:"method"`      // e.g. "payment.authtoken"
 	NonceStr   string                 `json:"nonce_str"`   // Random string ≤ 32 chars
+	AppCode    string                 `json:"app_code"`    // The merchant's unique code
 	SignType   string                 `json:"sign_type"`   // e.g. "SHA256WithRSA"
 	Sign       string                 `json:"sign"`        // Signature ≤ 512 chars
 	Version    string                 `json:"version"`     // e.g. "1.0"

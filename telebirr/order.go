@@ -19,6 +19,7 @@ type MerchantPreOrderRequestBody struct {
 	Sign       string                            `json:"sign"`
 	Version    string                            `json:"version"`
 	SignType   string                            `json:"sign_type"`
+	AppCode    string                            `json:"app_code"`
 	Timestamp  string                            `json:"timestamp"`
 }
 

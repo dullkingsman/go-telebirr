@@ -16,6 +16,7 @@ type QueryOrderRequestBody struct {
 	NonceStr   string               `json:"nonce_str"`   // Random string ≤ 32 chars
 	SignType   string               `json:"sign_type"`   // e.g. "SHA256WithRSA"
 	Sign       string               `json:"sign"`        // Signature ≤ 512 chars
+	AppCode    string               `json:"app_code"`    // The merchant's unique code
 	Version    string               `json:"version"`     // e.g. "1.0"
 	BizContent QueryOrderBizContent `json:"biz_content"` // Business content
 }
