@@ -141,7 +141,8 @@ func (c *HTTPClient[T]) DoRequest(req *Request) (*Response[T], error) {
 				)
 
 				if headerErr == nil {
-					fmt.Printf(`TELEBIRR_REQUEST ========================================================
+					fmt.Printf(`
+TELEBIRR_REQUEST ========================================================
 url: %s
 method: %s
 headers: %s
@@ -152,9 +153,11 @@ TELEBIRR_RESPONSE =======================================================
 status: %d
 headers: %+v
 body: %+v
-TELEBIRR_RESPONSE =======================================================`, req.Url, req.Method, jsonifiedHeader, logBody.String(), resStatus, resHeaders, resBody)
+TELEBIRR_RESPONSE =======================================================
+`, req.Url, req.Method, jsonifiedHeader, logBody.String(), resStatus, resHeaders, resBody)
 				} else {
 					fmt.Printf(`
+TELEBIRR_REQUEST ========================================================
 Could not stringify telebirr request parameters. 
 headerErr: %v
 TELEBIRR_REQUEST ========================================================
@@ -168,7 +171,8 @@ TELEBIRR_RESPONSE =======================================================
 status: %d
 headers: %+v
 body: %+v
-TELEBIRR_RESPONSE =======================================================`, headerErr, req.Url, req.Method, req.Headers, logBody.String(), resStatus, resHeaders, resBody)
+TELEBIRR_RESPONSE =======================================================
+`, headerErr, req.Url, req.Method, req.Headers, logBody.String(), resStatus, resHeaders, resBody)
 				}
 			}
 

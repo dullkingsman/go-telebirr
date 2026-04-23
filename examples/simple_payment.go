@@ -93,7 +93,7 @@ func main() {
 			}
 
 			if orderResp != nil && orderResp.Body.BizContent.PrepayID != "" {
-				request, err := TelebirrClient.NewRawRequest(orderResp.Body.BizContent.PrepayID)
+				request, err := TelebirrClient.NewRawRequest(orderResp.Body.BizContent.PrepayID, "Checkout")
 
 				if err != nil {
 					fmt.Printf("err: %+v\n", err)
