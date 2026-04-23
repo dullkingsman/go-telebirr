@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/dullkingsman/go-telebirr/internal/httpclient"
+	"github.com/dullkingsman/go-telebirr/core/httpclient"
 	"github.com/dullkingsman/go-telebirr/pkg/client"
 )
 

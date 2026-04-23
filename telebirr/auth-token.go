@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dullkingsman/go-telebirr/internal/httpclient"
+	"github.com/dullkingsman/go-telebirr/core/httpclient"
 )
 
 // GetAuthTokenRequestBody represents the request payload for /payment/v1/auth/authToken

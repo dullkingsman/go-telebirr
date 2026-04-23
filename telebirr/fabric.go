@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dullkingsman/go-telebirr/internal/httpclient"
+	"github.com/dullkingsman/go-telebirr/core/httpclient"
 )
 
 type GenerateAppTokenRequestBody struct {

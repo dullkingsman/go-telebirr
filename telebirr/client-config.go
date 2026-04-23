@@ -19,6 +19,7 @@ type ClientConfig struct {
 	VerifyResponseSignature bool            `json:"verifyResponseSignature"`
 	PublicKey               string          `json:"publicKey"`
 	ParsedPublicKey         *rsa.PublicKey  `json:"-"`
+	Log                     bool            `json:"log"`
 }
 
 func (c *ClientConfig) ParsePrivateKey() error {

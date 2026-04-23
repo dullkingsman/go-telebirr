@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dullkingsman/go-telebirr/internal/values"
+	"github.com/dullkingsman/go-telebirr/core/values"
 	"github.com/dullkingsman/go-telebirr/pkg/utils"
 )
 
