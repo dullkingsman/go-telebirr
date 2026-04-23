@@ -21,11 +21,24 @@ type GenerateAppTokenResponseBody struct {
 }
 
 func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppTokenResponseBody]) (*httpclient.Response[GenerateAppTokenResponseBody], error) {
-	var dateLayout = "20060102150405"
+	var (
+		dateLayout    = "20060102150405"
+		logDateLayout = "2006-01-02 15:04:05"
+	)
 
 	var token, tokenEffectiveDate, tokenExpirationDate = c.GetToken()
 
 	if token != nil {
+		fmt.Printf(
+			`Using cached fabric token: %s
+effective-date: %s 
+expiration-date: %s
+`,
+			*token,
+			tokenEffectiveDate.Format(logDateLayout),
+			tokenExpirationDate.Format(logDateLayout),
+		)
+
 		return &httpclient.Response[GenerateAppTokenResponseBody]{
 			Status: http.StatusOK,
 			Body: GenerateAppTokenResponseBody{
@@ -35,6 +48,8 @@ func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppT
 			},
 		}, nil
 	}
+
+	fmt.Println("No cached fabric token found")
 
 	var reqBody, err = json.Marshal(GenerateAppTokenRequestBody{AppSecret: c.config.AppSecret})
 	if err != nil {
