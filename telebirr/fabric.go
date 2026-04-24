@@ -1,6 +1,7 @@
 package telebirr
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -20,10 +21,14 @@ type GenerateAppTokenResponseBody struct {
 	ExpirationDate string `json:"expirationDate"`
 }
 
-func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppTokenResponseBody]) (*httpclient.Response[GenerateAppTokenResponseBody], error) {
+func (c *Client) GenerateAppToken(ctx context.Context, config ...httpclient.ClientConfig[GenerateAppTokenResponseBody]) (*httpclient.Response[GenerateAppTokenResponseBody], error) {
 	var dateLayout = "20060102150405"
 
-	var token, tokenEffectiveDate, tokenExpirationDate = c.GetToken()
+	var token, tokenEffectiveDate, tokenExpirationDate, err = c.GetToken(ctx)
+
+	if err != nil {
+		return nil, err
+	}
 
 	if token != nil {
 		return &httpclient.Response[GenerateAppTokenResponseBody]{
@@ -36,7 +41,7 @@ func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppT
 		}, nil
 	}
 
-	var reqBody, err = json.Marshal(GenerateAppTokenRequestBody{AppSecret: c.config.AppSecret})
+	reqBody, err := json.Marshal(GenerateAppTokenRequestBody{AppSecret: c.config.AppSecret})
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal request body: %w", err)
@@ -66,14 +71,14 @@ func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppT
 		effectiveDate, _  = time.Parse(dateLayout, resp.Body.EffectiveDate)
 	)
 
-	c.SetToken(resp.Body.Token, effectiveDate, expirationDate)
+	c.SetToken(ctx, resp.Body.Token, effectiveDate, expirationDate)
 
 	return resp, nil
 }
 
 type FabricTokenCache interface {
-	GetToken(key ...string) (*string, *time.Time, *time.Time)
-	SetToken(token string, effectiveDate time.Time, expirationDate time.Time) error
+	GetToken(ctx context.Context, key ...string) (*string, *time.Time, *time.Time, error)
+	SetToken(ctx context.Context, token string, effectiveDate time.Time, expirationDate time.Time) error
 }
 
 type DefaultFabricTokenCache struct {
@@ -83,7 +88,7 @@ type DefaultFabricTokenCache struct {
 	tokenClearTimer           *time.Timer
 }
 
-func (c *DefaultFabricTokenCache) GetToken(key ...string) (*string, *time.Time, *time.Time) {
+func (c *DefaultFabricTokenCache) GetToken(ctx context.Context, key ...string) (*string, *time.Time, *time.Time, error) {
 	var (
 		t  string
 		ef time.Time
@@ -107,15 +112,15 @@ expiration-date: %s
 			ex.Format(logDateLayout),
 		)
 
-		return &t, &ef, &ex
+		return &t, &ef, &ex, nil
 	}
 
 	fmt.Println("No cached fabric token found")
 
-	return nil, nil, nil
+	return nil, nil, nil, nil
 }
 
-func (c *DefaultFabricTokenCache) SetToken(token string, effectiveDate time.Time, expirationDate time.Time) error {
+func (c *DefaultFabricTokenCache) SetToken(ctx context.Context, token string, effectiveDate time.Time, expirationDate time.Time) error {
 	fmt.Printf(`set fabric token: %s
 effective-date: %s
 expiration-date: %s

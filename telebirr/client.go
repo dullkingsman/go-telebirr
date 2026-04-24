@@ -1,6 +1,7 @@
 package telebirr
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -42,10 +43,10 @@ func (c *Client) Config() ClientConfig {
 	return c.config
 }
 
-func (c *Client) GetToken(key ...string) (*string, *time.Time, *time.Time) {
-	return c.fabricTokenCache.GetToken(key...)
+func (c *Client) GetToken(ctx context.Context, key ...string) (*string, *time.Time, *time.Time, error) {
+	return c.fabricTokenCache.GetToken(ctx, key...)
 }
 
-func (c *Client) SetToken(token string, effectiveDate time.Time, expirationDate time.Time) {
-	_ = c.fabricTokenCache.SetToken(token, effectiveDate, expirationDate)
+func (c *Client) SetToken(ctx context.Context, token string, effectiveDate time.Time, expirationDate time.Time) {
+	_ = c.fabricTokenCache.SetToken(ctx, token, effectiveDate, expirationDate)
 }
