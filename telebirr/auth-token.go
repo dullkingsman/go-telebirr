@@ -120,6 +120,13 @@ func (c *Client) GetAuthToken(token string, body GetAuthTokenRequestBody, config
 		return nil, fmt.Errorf("failed to marshal request body: %w", err)
 	}
 
+	/*	fmt.Printf("reqBody: %+v\n", string(reqBody))
+		fmt.Printf("Authorization: %+v\n", token)
+		fmt.Printf("X-APP-Key: %+v\n", c.config.FabricAppID)
+		fmt.Printf("URL: %+v\n", c.config.BaseURL+Endpoints.GetAuthToken)
+
+		return nil, nil
+	*/
 	resp, err := httpclient.NewHTTPClient[GetAuthTokenResponseBody](config...).DoRequest(&httpclient.Request{
 		Method: "POST",
 		Url:    c.config.BaseURL + Endpoints.GetAuthToken,
