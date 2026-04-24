@@ -1,6 +1,7 @@
 package telebirr
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -11,7 +12,7 @@ type Client struct {
 	fabricTokenCache FabricTokenCache
 }
 
-func NewClient(config ClientConfig) *Client {
+func NewClient(config ClientConfig, fabricTokenCache ...FabricTokenCache) *Client {
 	if err := config.ParsePrivateKey(); err != nil {
 		panic(err)
 	}
@@ -22,9 +23,19 @@ func NewClient(config ClientConfig) *Client {
 		}
 	}
 
-	return &Client{
+	var tmp = &Client{
 		config: config,
 	}
+
+	if len(fabricTokenCache) > 0 {
+		fmt.Printf("using custom fabric token cache...\n")
+		tmp.fabricTokenCache = fabricTokenCache[0]
+	} else {
+		fmt.Printf("using default fabric token cache...\n")
+		tmp.fabricTokenCache = &DefaultFabricTokenCache{}
+	}
+
+	return tmp
 }
 
 func (c *Client) Config() ClientConfig {
