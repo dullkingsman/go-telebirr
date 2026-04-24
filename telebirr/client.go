@@ -42,10 +42,10 @@ func (c *Client) Config() ClientConfig {
 	return c.config
 }
 
-func (c *Client) GetToken() (*string, *time.Time, *time.Time) {
-	return c.fabricTokenCache.GetToken()
+func (c *Client) GetToken(key ...string) (*string, *time.Time, *time.Time) {
+	return c.fabricTokenCache.GetToken(key...)
 }
 
 func (c *Client) SetToken(token string, effectiveDate time.Time, expirationDate time.Time) {
-	c.fabricTokenCache.SetToken(token, effectiveDate, expirationDate)
+	_ = c.fabricTokenCache.SetToken(token, effectiveDate, expirationDate)
 }

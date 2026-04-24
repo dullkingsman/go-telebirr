@@ -72,8 +72,8 @@ func (c *Client) GenerateAppToken(config ...httpclient.ClientConfig[GenerateAppT
 }
 
 type FabricTokenCache interface {
-	GetToken() (*string, *time.Time, *time.Time)
-	SetToken(token string, effectiveDate time.Time, expirationDate time.Time)
+	GetToken(key ...string) (*string, *time.Time, *time.Time)
+	SetToken(token string, effectiveDate time.Time, expirationDate time.Time) error
 }
 
 type DefaultFabricTokenCache struct {
@@ -83,7 +83,7 @@ type DefaultFabricTokenCache struct {
 	tokenClearTimer           *time.Timer
 }
 
-func (c *DefaultFabricTokenCache) GetToken() (*string, *time.Time, *time.Time) {
+func (c *DefaultFabricTokenCache) GetToken(key ...string) (*string, *time.Time, *time.Time) {
 	var (
 		t  string
 		ef time.Time
@@ -115,7 +115,7 @@ expiration-date: %s
 	return nil, nil, nil
 }
 
-func (c *DefaultFabricTokenCache) SetToken(token string, effectiveDate time.Time, expirationDate time.Time) {
+func (c *DefaultFabricTokenCache) SetToken(token string, effectiveDate time.Time, expirationDate time.Time) error {
 	fmt.Printf(`set fabric token: %s
 effective-date: %s
 expiration-date: %s
@@ -144,10 +144,12 @@ expiration-date: %s
 
 	if d <= 0 {
 		startTimer()
-		return
+		return nil
 	}
 
 	time.AfterFunc(d, func() { startTimer() })
+
+	return nil
 }
 
 func (c *DefaultFabricTokenCache) clearTimer() {
